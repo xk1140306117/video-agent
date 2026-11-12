@@ -1,0 +1,8 @@
+node_modules/
+.next/
+.next-dev/
+.deploy/
+.env
+.env.*
+!.env.example
+.video-agent/

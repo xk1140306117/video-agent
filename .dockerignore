@@ -1,0 +1,9 @@
+node_modules
+.next
+.next-dev
+.deploy
+.git
+.env
+.env.*
+.video-agent
+npm-debug.log*

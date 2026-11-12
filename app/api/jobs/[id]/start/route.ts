@@ -1,0 +1,2 @@
+import { NextRequest, NextResponse } from "next/server"; import { recordJob } from "@/lib/job-store"; import { videoRequest } from "@/lib/video-api";
+export async function POST(_:NextRequest,{params}:{params:Promise<{id:string}>}){try{const {id}=await params;const result=await videoRequest("POST",`/v1/jobs/${id}/start`);await recordJob(result);return NextResponse.json(result);}catch(error){return NextResponse.json({message:error instanceof Error?error.message:"启动生成失败。"},{status:502});}}

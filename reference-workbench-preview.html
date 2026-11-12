@@ -1,0 +1,81 @@
+<div id="video-agent-preview" aria-label="视频生成工作台交互预览">
+  <style>
+    #video-agent-preview { --bg:#dbeCff; --surface:#f8fbff; --ink:#162a5c; --muted:#64749b; --line:#cbd8ff; --primary:#384cff; --primary2:#6667ff; --ok:#14845a; --warn:#c46a10; --danger:#c83b5b; color:var(--ink); font-family:"Microsoft YaHei","PingFang SC",system-ui,sans-serif; background:linear-gradient(135deg,#eaf4ff 0%,var(--bg) 52%,#e5e5ff 100%); border-radius:24px; overflow:hidden; box-shadow:0 18px 44px rgba(35,66,154,.16); }
+    #video-agent-preview * { box-sizing:border-box; }
+    #video-agent-preview .app { min-height:650px; display:grid; grid-template-columns:168px minmax(0,1fr); }
+    #video-agent-preview .side { background:rgba(248,251,255,.62); border-right:1px solid rgba(115,135,205,.24); padding:30px 10px; }
+    #video-agent-preview .nav { width:100%; border:0; background:transparent; color:var(--ink); display:flex; gap:10px; align-items:center; padding:13px 14px; border-radius:11px; text-align:left; font-size:14px; margin:5px 0; white-space:nowrap; }
+    #video-agent-preview .nav.active { background:#e1e8ff; color:#2438cf; font-weight:700; }
+    #video-agent-preview .main { padding:24px; }
+    #video-agent-preview .top { display:grid; grid-template-columns:minmax(0,1.68fr) minmax(250px,.82fr); gap:18px; }
+    #video-agent-preview .panel { background:rgba(248,251,255,.9); border:1px solid rgba(115,135,205,.22); border-radius:18px; padding:22px; box-shadow:0 8px 22px rgba(54,82,164,.09); }
+    #video-agent-preview h1 { font-size:28px; margin:0 0 6px; letter-spacing:-.5px; white-space:nowrap; }
+    #video-agent-preview h2 { font-size:18px; margin:0 0 14px; white-space:nowrap; }
+    #video-agent-preview .sub { color:var(--muted); font-size:14px; margin-bottom:17px; }
+    #video-agent-preview label { display:block; font-size:13px; font-weight:700; margin-bottom:7px; }
+    #video-agent-preview textarea { width:100%; min-height:128px; resize:none; font:inherit; font-size:14px; line-height:1.6; color:var(--ink); background:white; border:1px solid #aebdff; border-radius:12px; padding:13px; outline:none; }
+    #video-agent-preview textarea:focus { box-shadow:0 0 0 3px rgba(56,76,255,.18); }
+    #video-agent-preview .params { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0; }
+    #video-agent-preview select { width:100%; padding:10px; border:1px solid var(--line); border-radius:10px; color:var(--ink); background:white; font:inherit; }
+    #video-agent-preview .small { font-size:12px; color:var(--muted); font-weight:400; margin:0 0 5px; }
+    #video-agent-preview .primary, #video-agent-preview .secondary, #video-agent-preview .danger { border:0; border-radius:11px; padding:11px 15px; font:inherit; font-weight:700; cursor:pointer; }
+    #video-agent-preview .primary { width:100%; background:linear-gradient(90deg,var(--primary),var(--primary2)); color:white; box-shadow:0 6px 14px rgba(56,76,255,.25); }
+    #video-agent-preview .secondary { background:#e8edff; color:#3044d5; }
+    #video-agent-preview .danger { background:#fff0f3; color:var(--danger); }
+    #video-agent-preview .taskhead { display:flex; align-items:center; justify-content:space-between; gap:8px; white-space:nowrap; }
+    #video-agent-preview .badge { display:inline-block; border-radius:999px; padding:4px 9px; font-size:12px; font-weight:700; background:#e4e9ff; color:#4250d3; }
+    #video-agent-preview .badge.ok { background:#daf6e9; color:var(--ok); }
+    #video-agent-preview .badge.warn { background:#fff1dd; color:var(--warn); }
+    #video-agent-preview .badge.err { background:#ffe6ed; color:var(--danger); }
+    #video-agent-preview .progress { height:10px; background:#e2e8fa; overflow:hidden; border-radius:100px; margin:15px 0 11px; }
+    #video-agent-preview .bar { height:100%; width:0%; background:linear-gradient(90deg,#5a62ff,#9c73ff); transition:width .35s ease; border-radius:inherit; }
+    #video-agent-preview .status { font-size:14px; line-height:1.55; min-height:45px; color:var(--muted); }
+    #video-agent-preview .task-show { margin:2px 0 18px; padding:18px; border-radius:14px; background:linear-gradient(135deg,#eeeaff,#e3e9ff); }
+    #video-agent-preview .task-row { display:flex; align-items:center; gap:12px; white-space:nowrap; }
+    #video-agent-preview .spinner { width:39px; height:39px; border:6px solid #d6cefF; border-top-color:#8772ff; border-radius:50%; animation:video-agent-spin 1.15s linear infinite; flex:none; }
+    @keyframes video-agent-spin { to { transform:rotate(360deg); } }
+    #video-agent-preview .task-strong { color:#4449e2; font-size:24px; font-weight:700; letter-spacing:-.6px; }
+    #video-agent-preview .refs { border-top:1px solid #e1e7fa; padding-top:15px; }
+    #video-agent-preview .refs h3 { font-size:16px; margin:0 0 10px; white-space:nowrap; }
+    #video-agent-preview .ref { display:flex; align-items:center; gap:10px; min-width:0; padding:8px; border-radius:10px; background:#edf0ff; margin-top:8px; }
+    #video-agent-preview .ref-pic { width:70px; height:48px; flex:none; border-radius:8px; background:linear-gradient(140deg,#a8d9f1,#fbd7ac 42%,#7b8ac2); }.ref-pic.style { background:linear-gradient(140deg,#d9d9ff,#a4a1ff); }
+    #video-agent-preview .ref-copy { min-width:0; }.ref-copy b,.ref-copy span { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }.ref-copy b { font-size:13px; }.ref-copy span { color:var(--muted); font-size:12px; margin-top:2px; }
+    #video-agent-preview .works { margin-top:18px; }
+    #video-agent-preview .works-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }.works-head span { color:#4052da; font-size:13px; font-weight:700; }
+    #video-agent-preview .cards { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+    #video-agent-preview .work { background:rgba(248,251,255,.88); border-radius:14px; padding:8px; box-shadow:0 5px 14px rgba(54,82,164,.08); min-width:0; }
+    #video-agent-preview .thumb { height:82px; border-radius:9px; background:linear-gradient(135deg,#a7c9ff,#6257c9 45%,#feae93); position:relative; overflow:hidden; }.thumb::after { content:"▶"; position:absolute; inset:0; display:grid; place-items:center; color:white; font-size:18px; text-shadow:0 1px 4px #31416d; }.thumb.t2{background:linear-gradient(140deg,#a8e0d0,#4267bd,#f9bf93)}.thumb.t3{background:linear-gradient(145deg,#dac2ff,#7895d4,#e1f0ff)}.thumb.t4{background:linear-gradient(145deg,#a1b8e9,#ec9d9d,#ffe3a0)}
+    #video-agent-preview .work b { display:block; margin:8px 2px 3px; font-size:13px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }.work small { color:var(--muted); margin:0 2px; font-size:11px; }
+    #video-agent-preview .done-video { display:none; margin-top:12px; background:#eaf5ff; border:1px solid #c8e4ff; border-radius:12px; padding:11px; font-size:13px; color:#28538d; }.done-video.show { display:block; }
+    @media (max-width:720px){ #video-agent-preview .app{grid-template-columns:1fr}.side{display:none}.main{padding:14px}.top{grid-template-columns:1fr}.params,.cards{grid-template-columns:1fr 1fr}.panel{padding:16px} }
+  </style>
+  <main class="app">
+    <aside class="side" aria-label="主导航"><button class="nav active" type="button">⌂ 工作台</button><button class="nav" type="button">▷ 我的作品</button><button class="nav" type="button">▤ 素材</button><button class="nav" type="button">⚙ 设置</button></aside>
+    <section class="main">
+      <div class="top">
+        <section class="panel" aria-label="创建视频">
+          <h1>新建视频</h1><div class="sub">把想法交给智能体，生成可交付的视频</div>
+          <label for="brief">创意描述</label><textarea id="brief">为一家小企业制作 8 秒品牌介绍视频：晨光中的工作空间，镜头缓慢推进，画面干净、可信、有成长感。</textarea>
+          <div class="params"><div><div class="small">视频时长</div><select aria-label="视频时长"><option>8 秒</option><option>6 秒</option><option>15 秒</option></select></div><div><div class="small">画面比例</div><select aria-label="画面比例"><option>16:9</option><option>9:16</option></select></div><div><div class="small">清晰度</div><select aria-label="清晰度"><option>1080P</option><option>720P</option></select></div></div>
+          <button id="create" class="primary" type="button">开始生成</button>
+          <div id="done-video" class="done-video">成片已就绪：<strong>品牌介绍视频.mp4</strong>　<button id="download" class="secondary" type="button">下载成片</button></div>
+        </section>
+        <aside class="panel" aria-live="polite" aria-label="本次任务">
+          <div class="taskhead"><h2>本次任务</h2><span id="badge" class="badge">生成中</span></div>
+          <div class="task-show"><div class="task-row"><span class="spinner" aria-hidden="true"></span><span id="percent" class="task-strong">生成中 62%</span></div><div class="progress" role="progressbar" aria-label="生成进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="62"><div id="bar" class="bar" style="width:62%"></div></div><div id="status" class="status">正在生成视频，请稍候…</div></div>
+          <div class="refs"><h3>参考信息</h3><div class="ref"><span class="ref-pic"></span><span class="ref-copy"><b>参考画面</b><span>山脉、云海、晨光</span></span></div><div class="ref"><span class="ref-pic style"></span><span class="ref-copy"><b>参考风格</b><span>电影感、清新、治愈</span></span></div></div>
+        </aside>
+      </div>
+      <section class="works" aria-label="最近作品"><div class="works-head"><h2>最近作品</h2><span>查看全部</span></div><div class="cards"><article class="work"><div class="thumb"></div><b>品牌故事 · 晨光</b><small>8 秒 · 16:9 · 1080P</small></article><article class="work"><div class="thumb t2"></div><b>服务介绍 · 安心感</b><small>8 秒 · 16:9 · 1080P</small></article><article class="work"><div class="thumb t3"></div><b>团队日常 · 成长</b><small>6 秒 · 9:16 · 1080P</small></article><article class="work"><div class="thumb t4"></div><b>新品预热 · 夏日</b><small>8 秒 · 16:9 · 720P</small></article></div></section>
+    </section>
+  </main>
+  <script>
+    (() => {
+      const root=document.getElementById('video-agent-preview'); const by=id=>root.querySelector('#'+id);
+      const badge=by('badge'), bar=by('bar'), status=by('status'), percent=by('percent'), done=by('done-video');
+      const state=(name,value,text,kind='')=>{badge.textContent=name;badge.className='badge '+kind;percent.textContent=name+' '+value+'%';bar.style.width=value+'%';bar.parentElement.setAttribute('aria-valuenow',value);status.textContent=text;};
+      by('create').addEventListener('click',()=>{done.classList.remove('show');state('生成中',62,'正在生成视频，请稍候…');setTimeout(()=>{state('生成中',86,'正在生成视频，请稍候…');},650);setTimeout(()=>{state('已完成',100,'视频已生成完成。','ok');done.classList.add('show');},1300);});
+      by('download').addEventListener('click',()=>{status.textContent='这是预览：真实网站会从自有存储提供下载。';});
+    })();
+  </script>
+</div>

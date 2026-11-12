@@ -1,0 +1,2 @@
+import { NextRequest, NextResponse } from "next/server"; import { recordJob } from "@/lib/job-store"; import { videoRequest } from "@/lib/video-api";
+export async function GET(_:NextRequest,{params}:{params:Promise<{id:string}>}){try{const {id}=await params;const result=await videoRequest("GET",`/v1/jobs/${id}`);await recordJob(result);return NextResponse.json(result);}catch(error){return NextResponse.json({message:error instanceof Error?error.message:"查询失败。"},{status:502});}}
